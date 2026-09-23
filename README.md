@@ -13,9 +13,10 @@ de build.
   `SameSite=Strict`), válida 30 días.
 - Traducción de hasta 8000 caracteres entre 12 idiomas (o con detección
   automática del idioma de origen), vía la API de DeepSeek.
-- Traducción "al vuelo": se dispara sola 500ms después de dejar de escribir,
-  sin botón de "traducir", y llega por streaming — el texto aparece
-  progresivamente en vez de esperar a la respuesta completa.
+- Traducción por streaming: el texto aparece progresivamente en vez de
+  esperar a la respuesta completa.
+- Modo automático (traduce 500ms después de dejar de escribir) o manual
+  (solo al pulsar "traducir"), con la preferencia guardada en el navegador.
 - Intercambiar idiomas de origen/destino con un clic, manteniendo el texto.
 - Copiar la traducción y contador de caracteres.
 - Rate limiting en el login: 5 intentos fallidos por IP bloquean 15 minutos.

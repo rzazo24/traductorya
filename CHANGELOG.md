@@ -5,6 +5,13 @@ Todos los cambios notables de este proyecto se documentan en este archivo.
 El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto usa [Versionado Semántico](https://semver.org/lang/es/).
 
+## [1.3.0] - 2026-09-23
+
+### Added
+- Selector de modo de traducción: automático (traduce al escribir, como
+  hasta ahora) o manual (solo al pulsar "traducir"). La preferencia se
+  guarda en `localStorage`.
+
 ## [1.2.1] - 2026-09-23
 
 ### Removed
