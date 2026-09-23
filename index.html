@@ -302,6 +302,51 @@
   }
   #status.error { color: var(--danger); }
 
+  /* ---------- Aviso de actualización ---------- */
+  #update-banner {
+    display: none;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 12px max(16px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom))
+      max(16px, env(safe-area-inset-left));
+    background: var(--panel);
+    border-top: 1px solid var(--panel-border);
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text);
+  }
+  #update-banner.visible { display: flex; }
+
+  #update-banner .update-reload {
+    background: var(--accent);
+    color: #0d1210;
+    border: none;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: var(--mono);
+    font-size: 13px;
+  }
+  #update-banner .update-reload:hover { background: #67c2b3; }
+
+  #update-banner .update-dismiss {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    padding: 4px;
+  }
+  #update-banner .update-dismiss:hover { color: var(--text); }
+
   @media (max-width: 640px) {
     .panes { flex-direction: column; }
     .pane { min-height: 160px; }
@@ -389,6 +434,12 @@
   <div id="status"></div>
 </div>
 
+<div id="update-banner" role="status">
+  <span>Hay una nueva versión disponible.</span>
+  <button class="update-reload" id="update-reload-btn" type="button">Recargar</button>
+  <button class="update-dismiss" id="update-dismiss-btn" type="button" aria-label="Cerrar aviso">✕</button>
+</div>
+
 <script>
 (function () {
   const loginScreen = document.getElementById('login-screen');
@@ -410,6 +461,9 @@
   const logoutBtn = document.getElementById('logout-btn');
   const modeToggle = document.getElementById('mode-toggle');
   const translateBtn = document.getElementById('translate-btn');
+  const updateBanner = document.getElementById('update-banner');
+  const updateReloadBtn = document.getElementById('update-reload-btn');
+  const updateDismissBtn = document.getElementById('update-dismiss-btn');
 
   const MAX_CHARS = 8000;
   let debounceTimer = null;
@@ -596,6 +650,47 @@
   sourceLang.addEventListener('change', triggerTranslate);
   targetLang.addEventListener('change', triggerTranslate);
 
+  function registerServiceWorker() {
+    if (!('serviceWorker' in navigator)) return;
+
+    navigator.serviceWorker.register('/sw.js').then((registration) => {
+      // Ya hay una actualización esperando de una visita anterior.
+      if (registration.waiting && registration.active) {
+        updateBanner.classList.add('visible');
+      }
+
+      registration.addEventListener('updatefound', () => {
+        const newWorker = registration.installing;
+        if (!newWorker) return;
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            updateBanner.classList.add('visible');
+          }
+        });
+      });
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') registration.update();
+      });
+
+      updateReloadBtn.addEventListener('click', () => {
+        if (registration.waiting) registration.waiting.postMessage('SKIP_WAITING');
+      });
+    });
+
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (refreshing) return;
+      refreshing = true;
+      window.location.reload();
+    });
+  }
+
+  updateDismissBtn.addEventListener('click', () => {
+    updateBanner.classList.remove('visible');
+  });
+
+  registerServiceWorker();
   checkSession();
 })();
 </script>
