@@ -6,6 +6,13 @@ const { isAuthenticated } = require('./_auth-utils');
 const MODEL = 'deepseek-v4-flash';
 const MAX_CHARS = 8000;
 
+// Debe coincidir con las <option> de index.html (salvo "auto", solo válido como origen).
+const ALLOWED_LANGS = new Set([
+  'español', 'inglés', 'francés', 'alemán', 'italiano', 'portugués',
+  'catalán', 'gallego', 'euskera', 'neerlandés', 'ruso', 'chino',
+  'japonés', 'coreano', 'árabe',
+]);
+
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Método no permitido' });
@@ -27,8 +34,12 @@ module.exports = async (req, res) => {
     res.status(400).json({ error: `El texto supera el límite de ${MAX_CHARS} caracteres` });
     return;
   }
-  if (typeof targetLang !== 'string' || !targetLang.trim()) {
-    res.status(400).json({ error: 'Falta el idioma de destino' });
+  if (typeof targetLang !== 'string' || !ALLOWED_LANGS.has(targetLang)) {
+    res.status(400).json({ error: 'Idioma de destino no válido' });
+    return;
+  }
+  if (sourceLang && sourceLang !== 'auto' && !ALLOWED_LANGS.has(sourceLang)) {
+    res.status(400).json({ error: 'Idioma de origen no válido' });
     return;
   }
 
@@ -57,7 +68,7 @@ ${text}`;
       },
       body: JSON.stringify({
         model: MODEL,
-        max_tokens: 2048,
+        max_tokens: 4096,
         temperature: 0.3,
         messages: [{ role: 'user', content: prompt }],
       }),
