@@ -5,6 +5,14 @@ Todos los cambios notables de este proyecto se documentan en este archivo.
 El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto usa [Versionado Semántico](https://semver.org/lang/es/).
 
+## [1.4.4] - 2026-09-23
+
+### Fixed
+- El botón ⇄ no hacía nada cuando el origen era "Detectar idioma" (el
+  valor por defecto al abrir la app), sin ningún indicio visual de
+  que estaba deshabilitado. Ahora el origen pasa a ser el destino
+  actual, y el destino cae a "español" (o "inglés" si ya lo era).
+
 ## [1.4.3] - 2026-09-23
 
 ### Fixed
