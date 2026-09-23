@@ -50,13 +50,15 @@ module.exports = async (req, res) => {
 
   const originInstruction =
     sourceLang && sourceLang !== 'auto'
-      ? `de ${sourceLang} `
+      ? `desde ${sourceLang} `
       : '';
 
-  const prompt = `Traduce el siguiente texto ${originInstruction}a ${targetLang}. Devuelve ÚNICAMENTE la traducción, sin explicaciones, sin comillas, sin comentarios adicionales. Mantén el tono, el registro y el formato (saltos de línea, listas, etc.) del original.
-
-Texto:
-${text}`;
+  // Instrucciones fijas en "system" y el texto a traducir, tal cual, en
+  // "user" — separado en vez de concatenado en un único mensaje. Además de
+  // más limpio, para un mismo par de idiomas el mensaje "system" es
+  // idéntico entre peticiones, lo que deja a DeepSeek cachear ese prefijo
+  // repetido y abaratar el coste por petición.
+  const systemPrompt = `Traduces texto ${originInstruction}a ${targetLang}. Devuelve ÚNICAMENTE la traducción, sin explicaciones, sin comillas, sin comentarios adicionales. Mantén el tono, el registro y el formato (saltos de línea, listas, etc.) del original.`;
 
   let response;
   try {
@@ -71,7 +73,10 @@ ${text}`;
         max_tokens: 4096,
         temperature: 0.3,
         stream: true,
-        messages: [{ role: 'user', content: prompt }],
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: text },
+        ],
       }),
     });
   } catch {
