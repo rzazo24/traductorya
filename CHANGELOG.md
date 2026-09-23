@@ -5,6 +5,15 @@ Todos los cambios notables de este proyecto se documentan en este archivo.
 El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto usa [Versionado Semántico](https://semver.org/lang/es/).
 
+## [1.2.0] - 2026-09-23
+
+### Changed
+- La traducción llega por streaming en vez de esperar la respuesta
+  completa de DeepSeek: el texto va apareciendo progresivamente en el
+  panel de destino según lo genera el modelo, en vez de quedarse en
+  blanco hasta el final. No reduce el tiempo total, pero mejora mucho
+  la sensación de velocidad con textos largos.
+
 ## [1.1.0] - 2026-09-23
 
 ### Added
