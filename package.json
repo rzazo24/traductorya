@@ -1,0 +1,9 @@
+{
+  "name": "translator-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Traductor personal con login, desplegado en Vercel Functions",
+  "engines": {
+    "node": ">=18"
+  }
+}
