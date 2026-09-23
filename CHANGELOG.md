@@ -5,6 +5,16 @@ Todos los cambios notables de este proyecto se documentan en este archivo.
 El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto usa [Versionado Semántico](https://semver.org/lang/es/).
 
+## [1.2.1] - 2026-09-23
+
+### Removed
+- Catalán, gallego y euskera de los idiomas disponibles (frontend y
+  validación del backend).
+
+### Changed
+- Scrollbars estilizadas a juego con la paleta oscura, en vez de las
+  del navegador por defecto.
+
 ## [1.2.0] - 2026-09-23
 
 ### Changed
