@@ -12,7 +12,8 @@ de build.
 - Login por contraseña con sesión firmada por cookie (`HttpOnly` + `Secure` +
   `SameSite=Strict`), válida 30 días.
 - Traducción de hasta 8000 caracteres entre 12 idiomas (o con detección
-  automática del idioma de origen), vía la API de DeepSeek.
+  automática del idioma de origen), vía la API de DeepSeek. El inglés
+  como destino distingue variante estadounidense/británica.
 - Traducción por streaming: el texto aparece progresivamente en vez de
   esperar a la respuesta completa.
 - Modo automático (traduce 500ms después de dejar de escribir) o manual

@@ -5,6 +5,18 @@ Todos los cambios notables de este proyecto se documentan en este archivo.
 El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto usa [Versionado Semántico](https://semver.org/lang/es/).
 
+## [1.5.0] - 2026-09-23
+
+### Added
+- El destino distingue "Inglés (EE. UU.)" e "Inglés (Reino Unido)",
+  como en DeepL, en vez de un "Inglés" genérico. El origen mantiene
+  un "Inglés" genérico.
+
+### Fixed
+- El botón de intercambiar idiomas asumía que origen y destino
+  ofrecían siempre las mismas opciones; ahora convierte correctamente
+  entre el "Inglés" genérico del origen y las variantes del destino.
+
 ## [1.4.4] - 2026-09-23
 
 ### Fixed
