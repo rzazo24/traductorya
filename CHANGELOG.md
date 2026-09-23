@@ -5,6 +5,20 @@ Todos los cambios notables de este proyecto se documentan en este archivo.
 El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto usa [Versionado Semántico](https://semver.org/lang/es/).
 
+## [1.4.2] - 2026-09-23
+
+### Changed
+- El prompt a DeepSeek separa las instrucciones fijas (mensaje
+  `system`) del texto a traducir (mensaje `user`), en vez de
+  concatenarlos en uno solo. Para un mismo par de idiomas dentro de
+  la misma sesión, esto deja el mensaje `system` idéntico entre
+  peticiones, lo que permite a DeepSeek cachear ese prefijo y
+  abaratar el coste por petición.
+
+### Fixed
+- La traducción ya no se muestra envuelta entre comillas si el
+  modelo las añade pese a la instrucción de no hacerlo.
+
 ## [1.4.1] - 2026-09-23
 
 ### Changed
