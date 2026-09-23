@@ -5,6 +5,21 @@ Todos los cambios notables de este proyecto se documentan en este archivo.
 El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto usa [Versionado Semántico](https://semver.org/lang/es/).
 
+## [1.6.0] - 2026-09-23
+
+### Added
+- Tema claro, con botón (icono sol/luna) para forzarlo, visible tanto
+  en el login como en la cabecera de la app. Por defecto sigue la
+  preferencia del sistema (`prefers-color-scheme`); la elección
+  manual se guarda en `localStorage` y se aplica antes del primer
+  render para no generar un flash del tema por defecto.
+
+### Fixed
+- El selector `#login-card button` afectaba, por especificidad de
+  ID, a cualquier botón dentro de la tarjeta de login — incluido el
+  nuevo botón de tema, que heredaba el estilo del botón grande
+  "Entrar". Se acota a `#login-form button`.
+
 ## [1.5.0] - 2026-09-23
 
 ### Added

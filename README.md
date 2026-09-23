@@ -21,6 +21,8 @@ de build.
 - Intercambiar idiomas de origen/destino con un clic, manteniendo el texto.
 - Copiar la traducción y contador de caracteres.
 - Rate limiting en el login: 5 intentos fallidos por IP bloquean 15 minutos.
+- Tema claro/oscuro (sigue la preferencia del sistema por defecto, con
+  botón para forzarlo) visible tanto en el login como en la app.
 - Instalable como PWA en iOS/Android/escritorio (icono, modo standalone),
   con interfaz adaptada a pantallas de móvil (safe-areas, sin zoom
   automático al enfocar campos) y aviso para recargar cuando hay una
