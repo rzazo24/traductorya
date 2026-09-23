@@ -11,3 +11,7 @@ npm-debug.log*
 
 # OS
 .DS_Store
+
+# Contexto local para Claude Code (no debe subirse: documenta la URL real
+# de producción, que el proyecto mantiene deliberadamente fuera del repo)
+CLAUDE.md
