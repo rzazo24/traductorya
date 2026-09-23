@@ -5,6 +5,12 @@ Todos los cambios notables de este proyecto se documentan en este archivo.
 El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto usa [Versionado Semántico](https://semver.org/lang/es/).
 
+## [Unreleased]
+
+### Added
+- Captura de pantalla y README más detallado (características, estructura
+  del proyecto y notas de seguridad actualizadas).
+
 ## [1.0.0] - 2026-09-23
 
 ### Added
