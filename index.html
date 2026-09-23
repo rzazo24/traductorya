@@ -201,6 +201,19 @@
   }
   #swap-btn:hover { color: var(--accent); border-color: var(--accent-dim); }
 
+  #mode-toggle {
+    margin-left: auto;
+    background: none;
+    border: 1px solid var(--panel-border);
+    color: var(--text-dim);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-family: var(--mono);
+    font-size: 13px;
+    cursor: pointer;
+  }
+  #mode-toggle:hover { color: var(--accent); border-color: var(--accent-dim); }
+
   .panes {
     display: flex;
     flex: 1;
@@ -253,6 +266,11 @@
     font-size: 12px;
   }
   .pane-footer button:hover { color: var(--accent); }
+
+  .pane-footer-actions {
+    display: flex;
+    gap: 12px;
+  }
 
   #status {
     margin-top: 10px;
@@ -323,6 +341,8 @@
       <option value="coreano">Coreano</option>
       <option value="árabe">Árabe</option>
     </select>
+
+    <button id="mode-toggle" type="button" aria-pressed="true">auto</button>
   </div>
 
   <div class="panes">
@@ -330,7 +350,10 @@
       <textarea id="source-text" placeholder="Escribe o pega el texto..." maxlength="8000"></textarea>
       <div class="pane-footer">
         <span id="char-count">0 / 8000</span>
-        <button id="clear-btn">borrar</button>
+        <span class="pane-footer-actions">
+          <button id="translate-btn" type="button" style="display:none">traducir</button>
+          <button id="clear-btn">borrar</button>
+        </span>
       </div>
     </div>
     <div class="pane">
@@ -364,10 +387,46 @@
   const charCount = document.getElementById('char-count');
   const status = document.getElementById('status');
   const logoutBtn = document.getElementById('logout-btn');
+  const modeToggle = document.getElementById('mode-toggle');
+  const translateBtn = document.getElementById('translate-btn');
 
   const MAX_CHARS = 8000;
   let debounceTimer = null;
   let translateController = null;
+
+  const MODE_KEY = 'traductorya:mode';
+  let autoMode = true;
+  try {
+    autoMode = localStorage.getItem(MODE_KEY) !== 'manual';
+  } catch {}
+
+  function applyMode() {
+    modeToggle.textContent = autoMode ? 'auto' : 'manual';
+    modeToggle.setAttribute('aria-pressed', String(autoMode));
+    modeToggle.title = autoMode
+      ? 'Traduce mientras escribes (clic para pasar a manual)'
+      : 'Traduce solo al pulsar "traducir" (clic para volver a automático)';
+    translateBtn.style.display = autoMode ? 'none' : '';
+  }
+  applyMode();
+
+  modeToggle.addEventListener('click', () => {
+    autoMode = !autoMode;
+    try {
+      localStorage.setItem(MODE_KEY, autoMode ? 'auto' : 'manual');
+    } catch {}
+    applyMode();
+  });
+
+  translateBtn.addEventListener('click', () => {
+    clearTimeout(debounceTimer);
+    if (!sourceText.value.trim()) {
+      targetText.value = '';
+      status.textContent = '';
+      return;
+    }
+    translate();
+  });
 
   function showApp() {
     loginScreen.style.display = 'none';
@@ -511,7 +570,7 @@
 
   sourceText.addEventListener('input', () => {
     updateCharCount();
-    triggerTranslate();
+    if (autoMode) triggerTranslate();
   });
   sourceLang.addEventListener('change', triggerTranslate);
   targetLang.addEventListener('change', triggerTranslate);
