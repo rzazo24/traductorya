@@ -21,6 +21,18 @@
 
   * { box-sizing: border-box; }
 
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
   html, body {
     height: 100%;
     margin: 0;
@@ -238,6 +250,7 @@
     <div class="mark">traductor/</div>
     <h1>Acceso</h1>
     <form id="login-form" autocomplete="off">
+      <label for="password" class="sr-only">Contraseña</label>
       <input type="password" id="password" placeholder="Contraseña" autofocus>
       <button type="submit" id="login-btn">Entrar</button>
       <div id="login-error"></div>
@@ -271,7 +284,7 @@
       <option value="árabe">Árabe</option>
     </select>
 
-    <button id="swap-btn" title="Intercambiar idiomas">⇄</button>
+    <button id="swap-btn" title="Intercambiar idiomas" aria-label="Intercambiar idiomas">⇄</button>
 
     <select id="target-lang">
       <option value="inglés">Inglés</option>
@@ -334,6 +347,7 @@
 
   const MAX_CHARS = 8000;
   let debounceTimer = null;
+  let translateController = null;
 
   function showApp() {
     loginScreen.style.display = 'none';
@@ -429,6 +443,10 @@
   }
 
   async function translate() {
+    if (translateController) translateController.abort();
+    const controller = new AbortController();
+    translateController = controller;
+
     status.classList.remove('error');
     status.textContent = 'Traduciendo...';
 
@@ -441,6 +459,7 @@
           sourceLang: sourceLang.value,
           targetLang: targetLang.value,
         }),
+        signal: controller.signal,
       });
       const data = await res.json();
 
@@ -456,7 +475,8 @@
 
       targetText.value = data.translation;
       status.textContent = '';
-    } catch {
+    } catch (err) {
+      if (err.name === 'AbortError') return;
       status.classList.add('error');
       status.textContent = 'No se pudo conectar con el servidor';
     }
