@@ -586,6 +586,19 @@
     charCount.textContent = `${sourceText.value.length} / ${MAX_CHARS}`;
   }
 
+  // Red de seguridad: pese a la instrucción, algunos modelos a veces
+  // envuelven la traducción entre comillas. No recorta espacios/saltos de
+  // línea para no tocar el formato del original.
+  const QUOTE_PAIRS = [['"', '"'], ["'", "'"], ['`', '`'], ['“', '”'], ['«', '»']];
+  function stripWrappingQuotes(text) {
+    for (const [open, close] of QUOTE_PAIRS) {
+      if (text.startsWith(open) && text.endsWith(close) && text.length > open.length + close.length) {
+        return text.slice(open.length, text.length - close.length);
+      }
+    }
+    return text;
+  }
+
   function triggerTranslate() {
     clearTimeout(debounceTimer);
     if (!sourceText.value.trim()) {
@@ -635,6 +648,7 @@
         if (done) break;
         targetText.value += decoder.decode(value, { stream: true });
       }
+      targetText.value = stripWrappingQuotes(targetText.value);
       status.textContent = '';
     } catch (err) {
       if (err.name === 'AbortError') return;
