@@ -14,6 +14,27 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Traductor">
+
+<script>
+// Aplica el tema antes del primer render para evitar el flash del tema
+// equivocado (oscuro por defecto en :root) al cargar. El resto de la
+// lógica del toggle vive en el script principal, al final del body.
+(function () {
+  try {
+    var stored = localStorage.getItem('traductorya:theme');
+    var theme = stored === 'light' || stored === 'dark'
+      ? stored
+      : (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+    // Siempre explícito (no solo para "light"): si el sistema está en claro
+    // pero el usuario eligió "dark" a mano, hace falta el atributo
+    // data-theme="dark" para que la media query de preferencia del sistema
+    // no lo pise.
+    document.documentElement.setAttribute('data-theme', theme);
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', theme === 'light' ? '#f5f6f8' : '#12151a');
+  } catch (e) {}
+})();
+</script>
 <style>
   :root {
     --bg: #12151a;
@@ -23,9 +44,41 @@
     --text-dim: #8a93a3;
     --accent: #55b3a4;
     --accent-dim: #3d8577;
+    --accent-hover: #67c2b3;
     --danger: #d9776a;
     --mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
     --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color-scheme: dark;
+  }
+
+  /* Tema claro: por preferencia del sistema... */
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg: #f5f6f8;
+      --panel: #ffffff;
+      --panel-border: #dde1e7;
+      --text: #14171c;
+      --text-dim: #6b7280;
+      --accent: #2f8f7f;
+      --accent-dim: #256b60;
+      --accent-hover: #3aa792;
+      --danger: #c94f3f;
+      color-scheme: light;
+    }
+  }
+
+  /* ...o forzado a mano con el botón de tema (independiente del sistema) */
+  :root[data-theme="light"] {
+    --bg: #f5f6f8;
+    --panel: #ffffff;
+    --panel-border: #dde1e7;
+    --text: #14171c;
+    --text-dim: #6b7280;
+    --accent: #2f8f7f;
+    --accent-dim: #256b60;
+    --accent-hover: #3aa792;
+    --danger: #c94f3f;
+    color-scheme: light;
   }
 
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -92,12 +145,18 @@
     text-align: left;
   }
 
+  .login-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+
   #login-card .mark {
     font-family: var(--mono);
     font-size: 13px;
     color: var(--accent);
     letter-spacing: 0.02em;
-    margin-bottom: 6px;
   }
 
   #login-card h1 {
@@ -122,7 +181,7 @@
     border-color: var(--accent-dim);
   }
 
-  #login-card button {
+  #login-form button {
     width: 100%;
     margin-top: 12px;
     background: var(--accent);
@@ -135,8 +194,8 @@
     cursor: pointer;
   }
 
-  #login-card button:hover { background: #67c2b3; }
-  #login-card button:disabled { opacity: 0.6; cursor: default; }
+  #login-form button:hover { background: var(--accent-hover); }
+  #login-form button:disabled { opacity: 0.6; cursor: default; }
 
   #login-error {
     color: var(--danger);
@@ -241,6 +300,22 @@
   }
   #mode-toggle:hover { color: var(--accent); border-color: var(--accent-dim); }
 
+  .theme-toggle {
+    flex-shrink: 0;
+    background: none;
+    border: 1px solid var(--panel-border);
+    color: var(--text-dim);
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .theme-toggle:hover { color: var(--accent); border-color: var(--accent-dim); }
+  .theme-toggle svg { width: 17px; height: 17px; }
+
   .panes {
     display: flex;
     flex: 1;
@@ -340,7 +415,7 @@
     font-family: var(--mono);
     font-size: 13px;
   }
-  #update-banner .update-reload:hover { background: #67c2b3; }
+  #update-banner .update-reload:hover { background: var(--accent-hover); }
 
   #update-banner .update-dismiss {
     background: none;
@@ -363,7 +438,10 @@
 
 <div id="login-screen">
   <div id="login-card">
-    <div class="mark">traductor/</div>
+    <div class="login-card-top">
+      <div class="mark">traductor/</div>
+      <button id="theme-toggle-login" class="theme-toggle" type="button" aria-label="Cambiar tema"></button>
+    </div>
     <h1>Acceso</h1>
     <form id="login-form" autocomplete="off">
       <label for="password" class="sr-only">Contraseña</label>
@@ -378,6 +456,7 @@
   <header>
     <span class="mark">traductor/</span>
     <div class="header-actions">
+      <button id="theme-toggle-app" class="theme-toggle" type="button" aria-label="Cambiar tema"></button>
       <button id="mode-toggle" type="button" aria-pressed="true">auto</button>
       <button class="logout" id="logout-btn">cerrar sesión</button>
     </div>
@@ -472,6 +551,10 @@
   const updateBanner = document.getElementById('update-banner');
   const updateReloadBtn = document.getElementById('update-reload-btn');
   const updateDismissBtn = document.getElementById('update-dismiss-btn');
+  const themeToggleButtons = [
+    document.getElementById('theme-toggle-login'),
+    document.getElementById('theme-toggle-app'),
+  ];
 
   const MAX_CHARS = 8000;
   let debounceTimer = null;
@@ -731,6 +814,52 @@
 
   updateDismissBtn.addEventListener('click', () => {
     updateBanner.classList.remove('visible');
+  });
+
+  const THEME_KEY = 'traductorya:theme';
+  const SUN_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>';
+  const MOON_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+
+  function currentTheme() {
+    return document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+  }
+
+  function applyThemeUI() {
+    const theme = currentTheme();
+    const icon = theme === 'light' ? SUN_ICON : MOON_ICON;
+    const title = theme === 'light'
+      ? 'Tema claro (clic para pasar a oscuro)'
+      : 'Tema oscuro (clic para pasar a claro)';
+    themeToggleButtons.forEach((btn) => {
+      btn.innerHTML = icon;
+      btn.title = title;
+    });
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', theme === 'light' ? '#f5f6f8' : '#12151a');
+  }
+  applyThemeUI();
+
+  themeToggleButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const next = currentTheme() === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', next);
+      try {
+        localStorage.setItem(THEME_KEY, next);
+      } catch {}
+      applyThemeUI();
+    });
+  });
+
+  // Si el usuario no ha elegido nunca a mano, sigue el tema del sistema
+  // aunque cambie mientras la app está abierta.
+  window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', (e) => {
+    let stored = null;
+    try {
+      stored = localStorage.getItem(THEME_KEY);
+    } catch {}
+    if (stored === 'light' || stored === 'dark') return;
+    document.documentElement.setAttribute('data-theme', e.matches ? 'light' : 'dark');
+    applyThemeUI();
   });
 
   registerServiceWorker();
