@@ -158,7 +158,7 @@
 
   header {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     justify-content: space-between;
     margin-bottom: 20px;
   }
@@ -167,6 +167,12 @@
     font-family: var(--mono);
     font-size: 13px;
     color: var(--accent);
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
   }
 
   header .logout {
@@ -371,7 +377,10 @@
 <div id="app">
   <header>
     <span class="mark">traductor/</span>
-    <button class="logout" id="logout-btn">cerrar sesión</button>
+    <div class="header-actions">
+      <button id="mode-toggle" type="button" aria-pressed="true">auto</button>
+      <button class="logout" id="logout-btn">cerrar sesión</button>
+    </div>
   </header>
 
   <div class="lang-bar">
@@ -407,8 +416,6 @@
       <option value="coreano">Coreano</option>
       <option value="árabe">Árabe</option>
     </select>
-
-    <button id="mode-toggle" type="button" aria-pressed="true">auto</button>
   </div>
 
   <div class="panes">
