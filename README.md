@@ -2,7 +2,7 @@
 
 Traductor personal (estilo DeepL) construido con HTML/CSS/JS vanilla y
 funciones serverless de Vercel. Usa la API de DeepSeek para traducir texto
-entre 15 idiomas. Protegido con login por contraseña, sin frameworks ni paso
+entre 12 idiomas. Protegido con login por contraseña, sin frameworks ni paso
 de build.
 
 ![Captura de TraductorYa traduciendo español a inglés](docs/screenshot.png)
@@ -11,7 +11,7 @@ de build.
 
 - Login por contraseña con sesión firmada por cookie (`HttpOnly` + `Secure` +
   `SameSite=Strict`), válida 30 días.
-- Traducción de hasta 8000 caracteres entre 15 idiomas (o con detección
+- Traducción de hasta 8000 caracteres entre 12 idiomas (o con detección
   automática del idioma de origen), vía la API de DeepSeek.
 - Traducción "al vuelo": se dispara sola 500ms después de dejar de escribir,
   sin botón de "traducir", y llega por streaming — el texto aparece

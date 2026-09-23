@@ -9,8 +9,7 @@ const MAX_CHARS = 8000;
 // Debe coincidir con las <option> de index.html (salvo "auto", solo válido como origen).
 const ALLOWED_LANGS = new Set([
   'español', 'inglés', 'francés', 'alemán', 'italiano', 'portugués',
-  'catalán', 'gallego', 'euskera', 'neerlandés', 'ruso', 'chino',
-  'japonés', 'coreano', 'árabe',
+  'neerlandés', 'ruso', 'chino', 'japonés', 'coreano', 'árabe',
 ]);
 
 module.exports = async (req, res) => {
