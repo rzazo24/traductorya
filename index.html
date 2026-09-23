@@ -565,10 +565,21 @@
   });
 
   swapBtn.addEventListener('click', () => {
-    if (sourceLang.value === 'auto') return;
-    const a = sourceLang.value;
-    sourceLang.value = targetLang.value;
-    targetLang.value = a;
+    const oldSource = sourceLang.value;
+    const oldTarget = targetLang.value;
+
+    if (oldSource === 'auto') {
+      // No sabemos qué idioma detectó el origen automático, así que no hay
+      // un "origen anterior" real que poner como destino: el origen pasa a
+      // ser el destino actual, y el destino cae a un valor por defecto
+      // razonable (evitando dejar origen y destino en el mismo idioma).
+      sourceLang.value = oldTarget;
+      targetLang.value = oldTarget === 'español' ? 'inglés' : 'español';
+    } else {
+      sourceLang.value = oldTarget;
+      targetLang.value = oldSource;
+    }
+
     sourceText.value = targetText.value;
     targetText.value = '';
     updateCharCount();
