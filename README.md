@@ -35,18 +35,19 @@ api/translate.js        Traduce el texto vía DeepSeek (requiere sesión válida
 api/_auth-utils.js      Helpers de firma/verificación de la cookie (HMAC, sin dependencias)
 api/_rate-limit.js      Contador en memoria de intentos de login fallidos por IP
 manifest.webmanifest    Manifest de la PWA (nombre, iconos, modo standalone)
-sw.js                    Service worker: cachea el shell y avisa de nuevas versiones
+api/sw.js                Genera el service worker (servido en /sw.js vía rewrite)
 icons/                   Iconos de la PWA (192/512/apple-touch-icon/favicon)
-vercel.json              Cache-Control: no-cache en sw.js y el manifest
+vercel.json              Rewrite de /sw.js y Cache-Control: no-cache en el manifest
 ```
 
 ### Actualizar la PWA
 
-Cada vez que publiques un cambio que quieras que los usuarios reciban con
-el aviso de "nueva versión disponible", sube `CACHE_VERSION` en
-[sw.js](sw.js) (línea 3). Un `sw.js` con el mismo contenido no dispara
-ninguna detección de actualización — es el propio cambio de bytes en el
-archivo lo que el navegador detecta.
+El aviso de "nueva versión disponible" se dispara solo en cada despliegue:
+`api/sw.js` genera el contenido de `/sw.js` con `CACHE_VERSION` tomado de
+`VERCEL_GIT_COMMIT_SHA` (variable que Vercel rellena automáticamente), así
+que no hace falta tocar nada a mano. En local (`vercel dev`) esa variable
+no existe y cae a `'dev'`, así que el aviso de actualización solo se puede
+probar de verdad en un despliegue real.
 
 ## Desarrollo local
 

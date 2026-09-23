@@ -5,6 +5,16 @@ Todos los cambios notables de este proyecto se documentan en este archivo.
 El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto usa [Versionado Semántico](https://semver.org/lang/es/).
 
+## [1.4.1] - 2026-09-23
+
+### Changed
+- `sw.js` pasa de archivo estático a función serverless (`api/sw.js`,
+  servida en `/sw.js` vía rewrite) que genera `CACHE_VERSION` a partir
+  del hash de commit de cada despliegue. Antes había que subirlo a
+  mano, y si se olvidaba, ni siquiera cambios reales en el resto de
+  la app disparaban el aviso de actualización (el navegador solo
+  compara los bytes del propio `sw.js`).
+
 ## [1.4.0] - 2026-09-23
 
 ### Added

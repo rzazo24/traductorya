@@ -1,6 +1,6 @@
 {
   "name": "translator-app",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "private": true,
   "license": "MIT",
   "description": "Traductor personal con login, desplegado en Vercel Functions",
