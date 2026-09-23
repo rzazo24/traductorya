@@ -403,7 +403,8 @@
     <button id="swap-btn" title="Intercambiar idiomas" aria-label="Intercambiar idiomas">⇄</button>
 
     <select id="target-lang">
-      <option value="inglés">Inglés</option>
+      <option value="inglés estadounidense">Inglés (EE. UU.)</option>
+      <option value="inglés británico">Inglés (Reino Unido)</option>
       <option value="español">Español</option>
       <option value="francés">Francés</option>
       <option value="alemán">Alemán</option>
@@ -564,6 +565,16 @@
     showLogin();
   });
 
+  // El origen solo tiene un "Inglés" genérico (no hace falta distinguir
+  // variante para detectar/traducir DESDE inglés), pero el destino tiene
+  // dos variantes. Al intercambiar hay que convertir entre ambos mundos.
+  function toSourceLangValue(lang) {
+    return lang === 'inglés estadounidense' || lang === 'inglés británico' ? 'inglés' : lang;
+  }
+  function toTargetLangValue(lang) {
+    return lang === 'inglés' ? 'inglés estadounidense' : lang;
+  }
+
   swapBtn.addEventListener('click', () => {
     const oldSource = sourceLang.value;
     const oldTarget = targetLang.value;
@@ -573,11 +584,11 @@
       // un "origen anterior" real que poner como destino: el origen pasa a
       // ser el destino actual, y el destino cae a un valor por defecto
       // razonable (evitando dejar origen y destino en el mismo idioma).
-      sourceLang.value = oldTarget;
-      targetLang.value = oldTarget === 'español' ? 'inglés' : 'español';
+      sourceLang.value = toSourceLangValue(oldTarget);
+      targetLang.value = oldTarget === 'español' ? toTargetLangValue('inglés') : 'español';
     } else {
-      sourceLang.value = oldTarget;
-      targetLang.value = oldSource;
+      sourceLang.value = toSourceLangValue(oldTarget);
+      targetLang.value = toTargetLangValue(oldSource);
     }
 
     sourceText.value = targetText.value;

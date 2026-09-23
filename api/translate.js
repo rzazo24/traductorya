@@ -6,10 +6,13 @@ const { isAuthenticated } = require('./_auth-utils');
 const MODEL = 'deepseek-v4-flash';
 const MAX_CHARS = 8000;
 
-// Debe coincidir con las <option> de index.html (salvo "auto", solo válido como origen).
+// Debe coincidir con las <option> de index.html (salvo "auto", solo válido
+// como origen). "inglés" solo es válido como origen — como destino solo se
+// ofrecen las variantes estadounidense/británico.
 const ALLOWED_LANGS = new Set([
-  'español', 'inglés', 'francés', 'alemán', 'italiano', 'portugués',
-  'neerlandés', 'ruso', 'chino', 'japonés', 'coreano', 'árabe',
+  'español', 'inglés', 'inglés estadounidense', 'inglés británico',
+  'francés', 'alemán', 'italiano', 'portugués', 'neerlandés', 'ruso',
+  'chino', 'japonés', 'coreano', 'árabe',
 ]);
 
 module.exports = async (req, res) => {
