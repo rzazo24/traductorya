@@ -5,6 +5,13 @@ Todos los cambios notables de este proyecto se documentan en este archivo.
 El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto usa [Versionado Semántico](https://semver.org/lang/es/).
 
+## [1.4.3] - 2026-09-23
+
+### Fixed
+- El botón de modo auto/manual descentraba visualmente la barra de
+  idiomas en escritorio. Se mueve a la cabecera, junto a "cerrar
+  sesión"; la barra de idiomas vuelve a ser select ⇄ select.
+
 ## [1.4.2] - 2026-09-23
 
 ### Changed
