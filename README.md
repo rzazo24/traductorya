@@ -20,6 +20,10 @@ de build.
 - Intercambiar idiomas de origen/destino con un clic, manteniendo el texto.
 - Copiar la traducción y contador de caracteres.
 - Rate limiting en el login: 5 intentos fallidos por IP bloquean 15 minutos.
+- Instalable como PWA en iOS/Android/escritorio (icono, modo standalone),
+  con interfaz adaptada a pantallas de móvil (safe-areas, sin zoom
+  automático al enfocar campos) y aviso para recargar cuando hay una
+  versión nueva publicada.
 
 ## Estructura
 
@@ -30,7 +34,19 @@ api/check.js            Comprueba la sesión actual / cierra sesión
 api/translate.js        Traduce el texto vía DeepSeek (requiere sesión válida)
 api/_auth-utils.js      Helpers de firma/verificación de la cookie (HMAC, sin dependencias)
 api/_rate-limit.js      Contador en memoria de intentos de login fallidos por IP
+manifest.webmanifest    Manifest de la PWA (nombre, iconos, modo standalone)
+sw.js                    Service worker: cachea el shell y avisa de nuevas versiones
+icons/                   Iconos de la PWA (192/512/apple-touch-icon/favicon)
+vercel.json              Cache-Control: no-cache en sw.js y el manifest
 ```
+
+### Actualizar la PWA
+
+Cada vez que publiques un cambio que quieras que los usuarios reciban con
+el aviso de "nueva versión disponible", sube `CACHE_VERSION` en
+[sw.js](sw.js) (línea 3). Un `sw.js` con el mismo contenido no dispara
+ninguna detección de actualización — es el propio cambio de bytes en el
+archivo lo que el navegador detecta.
 
 ## Desarrollo local
 

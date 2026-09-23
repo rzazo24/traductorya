@@ -5,6 +5,21 @@ Todos los cambios notables de este proyecto se documentan en este archivo.
 El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto usa [Versionado Semántico](https://semver.org/lang/es/).
 
+## [1.4.0] - 2026-09-23
+
+### Added
+- La app es instalable como PWA (manifest, iconos, modo standalone) en
+  iOS, Android y escritorio.
+- Service worker que cachea el shell de la app y muestra un banner
+  para recargar cuando detecta que hay una versión nueva publicada.
+- Interfaz adaptada a iOS/Android: respeta las safe-areas (notch/home
+  indicator), evita el zoom automático de iOS al enfocar campos, y
+  quita el flash de "tap highlight" táctil.
+
+### Fixed
+- La barra de idiomas se desbordaba horizontalmente en pantallas de
+  móvil, cortando el selector de destino y el botón de modo.
+
 ## [1.3.0] - 2026-09-23
 
 ### Added
