@@ -1,8 +1,12 @@
-// Sube este número cada vez que publiques cambios relevantes (a la vez que
-// la versión de package.json): un sw.js con contenido distinto es lo único
-// que hace que el navegador detecte una actualización.
-const CACHE_VERSION = 'v1';
-const CACHE_NAME = `traductorya-${CACHE_VERSION}`;
+// Sirve /sw.js (vía el rewrite en vercel.json) generándolo en cada
+// petición, en vez de como archivo estático. Así CACHE_VERSION sale del
+// hash de commit de cada despliegue (VERCEL_GIT_COMMIT_SHA, que Vercel
+// rellena solo) y el aviso de "nueva versión disponible" se dispara en
+// todos los despliegues, sin tener que acordarse de tocar este archivo.
+const CACHE_VERSION = process.env.VERCEL_GIT_COMMIT_SHA || 'dev';
+
+const SW_SCRIPT = `
+const CACHE_NAME = 'traductorya-${CACHE_VERSION}';
 
 const PRECACHE_URLS = [
   '/',
@@ -53,3 +57,10 @@ self.addEventListener('fetch', (event) => {
 self.addEventListener('message', (event) => {
   if (event.data === 'SKIP_WAITING') self.skipWaiting();
 });
+`;
+
+module.exports = (req, res) => {
+  res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.status(200).end(SW_SCRIPT);
+};
