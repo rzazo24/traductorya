@@ -16,6 +16,7 @@ y este proyecto usa [Versionado Semántico](https://semver.org/lang/es/).
   tras 5 intentos fallidos en una ventana de 5 minutos.
 - `.gitignore` y `.env.example` para permitir que el repositorio sea
   público sin exponer secretos.
+- Licencia MIT.
 
 ### Security
 - Comparación de la contraseña de login con `crypto.timingSafeEqual`
