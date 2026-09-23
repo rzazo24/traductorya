@@ -59,8 +59,9 @@ module.exports = async (req, res) => {
 Texto:
 ${text}`;
 
+  let response;
   try {
-    const response = await fetch('https://api.deepseek.com/chat/completions', {
+    response = await fetch('https://api.deepseek.com/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -70,21 +71,63 @@ ${text}`;
         model: MODEL,
         max_tokens: 4096,
         temperature: 0.3,
+        stream: true,
         messages: [{ role: 'user', content: prompt }],
       }),
     });
-
-    if (!response.ok) {
-      const errBody = await response.text();
-      res.status(502).json({ error: 'Error de la API de traducción', detail: errBody });
-      return;
-    }
-
-    const data = await response.json();
-    const translation = (data.choices?.[0]?.message?.content || '').trim();
-
-    res.status(200).json({ translation });
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: 'Fallo al contactar con la API de traducción' });
+    return;
+  }
+
+  if (!response.ok) {
+    const errBody = await response.text();
+    res.status(502).json({ error: 'Error de la API de traducción', detail: errBody });
+    return;
+  }
+
+  // A partir de aquí ya no se pueden cambiar los headers/status: se hace
+  // streaming del texto traducido tal como llega de DeepSeek, en texto
+  // plano (no se reenvía el SSE crudo para que el cliente no tenga que
+  // parsear JSON por trozo).
+  res.writeHead(200, {
+    'Content-Type': 'text/plain; charset=utf-8',
+    'Cache-Control': 'no-cache',
+    'X-Content-Type-Options': 'nosniff',
+  });
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop();
+
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed.startsWith('data:')) continue;
+        const payload = trimmed.slice(5).trim();
+        if (payload === '[DONE]') continue;
+
+        try {
+          const parsed = JSON.parse(payload);
+          const delta = parsed.choices?.[0]?.delta?.content;
+          if (delta) res.write(delta);
+        } catch {
+          // línea SSE incompleta o no-JSON: se ignora
+        }
+      }
+    }
+  } catch {
+    // conexión cortada a mitad de stream: no se puede cambiar el status ya
+    // enviado, simplemente se cierra la respuesta con lo que se haya escrito.
+  } finally {
+    res.end();
   }
 };

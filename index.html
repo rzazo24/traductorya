@@ -449,6 +449,7 @@
 
     status.classList.remove('error');
     status.textContent = 'Traduciendo...';
+    targetText.value = '';
 
     try {
       const res = await fetch('/api/translate', {
@@ -461,19 +462,25 @@
         }),
         signal: controller.signal,
       });
-      const data = await res.json();
 
       if (res.status === 401) {
         showLogin();
         return;
       }
       if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
         status.classList.add('error');
         status.textContent = data.error || 'Error al traducir';
         return;
       }
 
-      targetText.value = data.translation;
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        targetText.value += decoder.decode(value, { stream: true });
+      }
       status.textContent = '';
     } catch (err) {
       if (err.name === 'AbortError') return;
